@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1B2A41">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>خیاط یار</title>
+<style>
+:root{--ink:#1B2A41;--tape:#F4C430;--tape-d:#D9A300;--paper:#F4F6F9;--line:#D5DBE4;--slate:#5A6A7E;--coral:#C0392B;--ok:#2E7D6B}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;color:var(--ink);font:16px/1.7 "Vazirmatn","IRANSans","Segoe UI",Tahoma,system-ui,sans-serif;background-color:var(--paper);
+ background-image:linear-gradient(#E6EAF0 1px,transparent 1px),linear-gradient(90deg,#E6EAF0 1px,transparent 1px);background-size:20px 20px}
+button,input,select{font:inherit;color:inherit}
+.top{background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top))}
+.brand{display:flex;align-items:center;gap:12px}
+.brand svg{width:42px;height:42px;flex:none}
+.brand h1{margin:0;font-size:22px;line-height:1.2}
+.brand p{margin:0;font-size:13px;color:#B9C4D4}
+#helpBtn{background:transparent;border:1.5px solid var(--tape);color:var(--tape);border-radius:8px;padding:7px 14px;cursor:pointer;white-space:nowrap}
+#helpBtn:hover,#helpBtn:focus-visible{background:var(--tape);color:var(--ink)}
+.tape{position:relative;height:26px;background:var(--tape);overflow:hidden;border-bottom:2px solid var(--ink)}
+.tape::before{content:"";position:absolute;inset:0;background:
+ repeating-linear-gradient(90deg,var(--ink) 0 1px,transparent 1px 40px) bottom/100% 14px no-repeat,
+ repeating-linear-gradient(90deg,rgba(27,42,65,.7) 0 1px,transparent 1px 8px) bottom/100% 7px no-repeat}
+.tape-done{position:absolute;right:0;top:0;bottom:0;width:0;background:var(--tape-d);opacity:.55;transition:width .35s ease}
+#stepname{margin:0;padding:8px 16px 0;max-width:900px;margin-inline:auto;font-size:14px;color:var(--slate)}
+main{max-width:900px;margin:0 auto;padding:8px 16px 28px}
+h2{font-size:22px;margin:10px 0 14px;line-height:1.4}
+h3{font-size:18px;margin:26px 0 10px}
+.lead{margin:-6px 0 14px;color:var(--slate)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.opt{background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:14px 16px;text-align:right;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-height:76px;position:relative}
+.opt b{font-size:17px}
+.opt span{font-size:13px;color:var(--slate)}
+.opt:hover,.opt:focus-visible{border-color:var(--ink)}
+.opt.sel{border-color:var(--ink)}
+.opt.sel::after{content:"";position:absolute;inset-inline:12px;bottom:0;height:4px;background:var(--tape);border-radius:4px 4px 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
+.chip{background:#fff;border:1px solid var(--line);border-radius:8px;padding:2px 10px;font-size:14px;cursor:pointer}
+.chip small{color:var(--slate);margin-inline-end:4px}
+.chips.fixed .chip{cursor:default}
+.nav,.acts{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 6px}
+.primary,.ghost{border-radius:8px;padding:10px 18px;cursor:pointer;border:1.5px solid var(--ink)}
+.primary{background:var(--tape);color:var(--ink);font-weight:700}
+.primary:hover,.primary:focus-visible{background:var(--ink);color:var(--tape)}
+.ghost{background:#fff}
+.ghost:hover,.ghost:focus-visible{background:var(--ink);color:#fff}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.photo{margin-top:22px;background:#fff;border:1.5px dashed var(--line);border-radius:10px;padding:14px}
+.photo label{display:block;font-weight:700;margin-bottom:6px}
+.photo p{margin:8px 0 0;font-size:13px;color:var(--slate)}
+.photo img{display:block;max-height:180px;max-width:100%;margin-top:10px;border-radius:6px}
+.photo.small{display:flex;align-items:center;gap:12px;padding:8px;margin:10px 0}
+.photo.small img{max-height:70px;margin:0}
+.cust{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.cust input,.cust select{flex:1 1 180px;border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;background:#fff}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.fields.two{margin-top:16px}
+.fld label{display:block;font-weight:700;font-size:15px}
+.fld label em{font-style:normal;font-weight:400;font-size:12px;color:var(--slate);margin-inline-start:6px}
+.fld input{width:100%;border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;background:#fff;text-align:right;direction:ltr;font-size:18px}
+.fld input:focus{border-color:var(--ink);outline:none;box-shadow:0 0 0 3px rgba(244,196,48,.55)}
+.fld small{display:block;font-size:12.5px;color:var(--slate);line-height:1.5;margin-top:3px}
+.fld.bad input{border-color:var(--coral)}
+.fld.bad small{color:var(--coral);font-weight:700}
+.err{color:var(--coral);font-weight:700}
+.warn{background:#FFF6D6;border-inline-start:4px solid var(--tape-d);padding:8px 12px;border-radius:6px;margin:10px 0;font-size:14px}
+.pages{font-size:14px;color:var(--slate);margin:6px 0 12px}
+.sheetwrap{background:#fff;border:1.5px solid var(--line);border-radius:10px;overflow:auto;padding:8px;margin-top:8px}
+.sheetwrap svg{display:block;width:100%;height:auto}
+.sheetwrap.zoom{max-height:75vh}
+.sheetwrap.zoom svg{width:1100px;max-width:none}
+.smallbtn{padding:5px 12px;font-size:14px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.filebtn{display:inline-block;margin-top:8px;padding:7px 16px}
+.sr:focus-visible+*,input.sr:focus-visible~*{outline:0}
+.photo:focus-within .filebtn{outline:3px solid var(--ink);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0;font-size:13px;color:var(--slate)}
+.legend i.l{display:inline-block;width:26px;height:0;border-top:2px solid var(--ink);vertical-align:middle;margin-inline-end:6px}
+.legend i.stitch{border-top:2px dashed var(--coral)}
+.legend i.fold{border-top:2px dashed var(--ink)}
+.legend i.grain{border-top:1px solid var(--ink)}
+.tbl{overflow:auto;background:#fff;border:1.5px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#EDF1F6;font-size:13px}
+tr:last-child td{border-bottom:0}
+.notes{padding-inline-start:20px;font-size:14.5px}
+.foot{text-align:center;color:var(--slate);font-size:13px;padding:14px 16px 24px}
+.foot b{color:var(--ink)}
+dialog{border:0;border-radius:12px;padding:0;max-width:min(560px,92vw);width:100%;max-height:92vh;overflow:auto;background:#fff;color:var(--ink)}
+dialog::backdrop{background:rgba(27,42,65,.55)}
+.help{padding:20px 22px 16px}
+.help h2{margin-top:0}
+.help ol{padding-inline-start:26px;margin:0 0 12px;list-style-type:persian}
+.help li{margin-bottom:6px}
+.help .by{border-top:1px solid var(--line);padding-top:10px;margin:12px 0;font-size:14px;color:var(--slate)}
+.help .by b{color:var(--ink)}
+#toast{position:fixed;bottom:22px;inset-inline:0;margin:auto;width:max-content;max-width:90vw;background:var(--ink);color:#fff;padding:9px 18px;border-radius:8px;opacity:0;transform:translateY(12px);transition:.25s;pointer-events:none;z-index:9}
+#toast.on{opacity:1;transform:none}
+svg .cut{fill:#fff;stroke:#1B2A41;stroke-width:.7}
+svg .stitch{fill:none;stroke:#C0392B;stroke-width:.35;stroke-dasharray:3 2}
+svg .fold{fill:none;stroke:#1B2A41;stroke-width:.5;stroke-dasharray:8 2 1.5 2}
+svg .grain{stroke:#1B2A41;stroke-width:.4}
+svg .arrow{fill:#1B2A41}
+svg .lbl{font:700 6px Tahoma,sans-serif;fill:#1B2A41;direction:rtl}
+svg .sm{font:4.2px Tahoma,sans-serif;fill:#44546A;direction:rtl}
+svg .frame{fill:none;stroke:#999;stroke-width:.3}
+svg .mark{stroke:#444;stroke-width:.35}
+svg .pg{font:4px Tahoma,sans-serif;fill:#555;direction:rtl}
+#printRoot{display:none}
+@media (prefers-reduced-motion:reduce){.tape-done,#toast{transition:none}}
+@media (max-width:520px){.grid{grid-template-columns:1fr 1fr}.opt{padding:12px}.brand p{display:none}}
+@media (max-width:640px){
+ thead{display:none}
+ table,tbody,tr,td{display:block;width:100%}
+ tr{padding:8px 10px;border-bottom:1px solid var(--line)}
+ tr:last-child{border-bottom:0}
+ td{border:0;padding:2px 0;display:flex;gap:8px}
+ td::before{content:attr(data-l);flex:none;width:56px;color:var(--slate);font-size:12.5px}
+}
+@page{size:A4;margin:0}
+@media print{
+ html,body{background:#fff!important}
+ body>*:not(#printRoot){display:none!important}
+ #printRoot{display:block}
+ .ppage{width:210mm;height:297mm;padding:10mm;break-after:page;page-break-after:always;overflow:hidden}
+ .ppage svg{display:block}
+}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="brand">
+  <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="30" cy="32" r="22" fill="#F4C430"/><circle cx="30" cy="32" r="9" fill="#1B2A41"/><circle cx="30" cy="32" r="3.5" fill="#F4C430"/><path d="M44 50 L61 56 L61 48 L50 44Z" fill="#F4C430"/><path d="M52 47v4M56 49v3M48 46v3" stroke="#1B2A41" stroke-width="1.2"/></svg>
+  <div><h1>خیاط یار</h1><p>الگوی خیاطی از روی اندازه، با مقیاس واقعی</p></div>
+ </div>
+ <button id="helpBtn" type="button">راهنمای استفاده</button>
+</header>
+<div class="tape" aria-hidden="true"><div class="tape-done"></div></div>
+<p id="stepname"></p>
+<main id="app"></main>
+<footer class="foot">طراحی و توسعه: گروه فریلنسری <b>INFC.1405</b></footer>
+<div id="toast" role="status"></div>
+<dialog id="help">
+ <div class="help">
+  <h2>راهنمای استفاده</h2>
+  <ol>
+   <li>مدل لباس، یقه، آستین و گشادی را انتخاب کنید.</li>
+   <li>اندازه‌های مشتری را بر حسب سانتی‌متر وارد کنید؛ زیر هر خانه روش اندازه‌گیری نوشته شده است.</li>
+   <li>«ساخت الگو» را بزنید و نقشه و جدول ابعاد قطعات را ببینید.</li>
+   <li>با «چاپ / ذخیرهٔ PDF» فایل ۱:۱ بگیرید: مقیاس ۱۰۰٪ و «Fit to page» خاموش. مربع ۱۰×۱۰ را با خط‌کش بسنجید.</li>
+   <li>برگ‌ها را به ترتیب ردیف و ستون بچسبانید، الگو را ببرید و پیش از برش پارچهٔ اصلی، نمونهٔ آزمایشی بدوزید.</li>
+  </ol>
+  <p>الگوها پایه و استاندارد هستند؛ دقت نهایی با تجربهٔ خیاط است.</p>
+  <p class="by">طراحی و توسعه: گروه فریلنسری <b>INFC.1405</b></p>
+  <button id="helpClose" class="primary" type="button">متوجه شدم</button>
+ </div>
+</dialog>
+<div id="printRoot"></div>
+<script>
+'use strict';
+/* ===== خیاط یار — موتور الگوکشی (واحد: سانتی‌متر) ===== */
+const PI = Math.PI;
+const FA = '۰۱۲۳۴۵۶۷۸۹';
+const fa = s => String(s).replace(/\d/g, d => FA[d]);
+const num = (x, p = 1) => fa((Math.round(x * Math.pow(10, p)) / Math.pow(10, p)).toString().replace('.', '٫'));
+
+/* ---------- هندسه ---------- */
+function bez2(a, b, c, n = 18) {
+  const o = [];
+  for (let i = 0; i <= n; i++) { const t = i / n, u = 1 - t;
+    o.push([u * u * a[0] + 2 * u * t * b[0] + t * t * c[0], u * u * a[1] + 2 * u * t * b[1] + t * t * c[1]]); }
+  return o;
+}
+function bez3(a, b, c, d, n = 24) {
+  const o = [];
+  for (let i = 0; i <= n; i++) { const t = i / n, u = 1 - t;
+    o.push([u*u*u*a[0] + 3*u*u*t*b[0] + 3*u*t*t*c[0] + t*t*t*d[0],
+            u*u*u*a[1] + 3*u*u*t*b[1] + 3*u*t*t*c[1] + t*t*t*d[1]]); }
+  return o;
+}
+function plen(p) { let s = 0; for (let i = 1; i < p.length; i++) s += Math.hypot(p[i][0] - p[i-1][0], p[i][1] - p[i-1][1]); return s; }
+const S = (pts, sa) => ({ pts, sa });
+
+/* خط دور قطعه با ضریب دوخت متفاوت برای هر لبه */
+function outline(pc) {
+  let P = [], E = [];
+  pc.segs.forEach((sg, k) => {
+    sg.pts.forEach((p, j) => {
+      if (k > 0 && j === 0) return;
+      P.push([p[0], p[1]]); E.push(j === 0 ? null : sg.sa);
+    });
+  });
+  const f = P[0], l = P[P.length - 1];
+  if (Math.hypot(f[0] - l[0], f[1] - l[1]) < 1e-6) { P.pop(); E[0] = E.pop(); }
+  else E[0] = pc.segs[pc.segs.length - 1].sa;
+  // حذف نقاط تکراری
+  const P2 = [], E2 = [];
+  for (let i = 0; i < P.length; i++) {
+    const q = P2[P2.length - 1];
+    if (q && Math.hypot(P[i][0] - q[0], P[i][1] - q[1]) < 1e-4) continue;
+    P2.push(P[i]); E2.push(E[i]);
+  }
+  return { P: P2, E: E2 };
+}
+function offsetPoly(P, E) {
+  const n = P.length; let A = 0;
+  for (let i = 0; i < n; i++) { const a = P[i], b = P[(i + 1) % n]; A += a[0] * b[1] - b[0] * a[1]; }
+  const sg = A > 0 ? 1 : -1, N = [];
+  for (let i = 0; i < n; i++) {
+    const a = P[(i + n - 1) % n], b = P[i]; let dx = b[0] - a[0], dy = b[1] - a[1];
+    const L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
+    N.push(sg > 0 ? [dy, -dx] : [-dy, dx]);
+  }
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const n1 = N[i], a1 = E[i], n2 = N[(i + 1) % n], a2 = E[(i + 1) % n];
+    const det = n1[0] * n2[1] - n1[1] * n2[0]; let dx, dy;
+    if (Math.abs(det) < 0.02) { dx = (n1[0] * a1 + n2[0] * a2) / 2; dy = (n1[1] * a1 + n2[1] * a2) / 2; }
+    else { dx = (a1 * n2[1] - a2 * n1[1]) / det; dy = (n1[0] * a2 - n2[0] * a1) / det; }
+    const m = Math.max(a1, a2), L = Math.hypot(dx, dy);
+    if (m > 0 && L > 2.2 * m) { dx *= 2.2 * m / L; dy *= 2.2 * m / L; }
+    out.push([P[i][0] + dx, P[i][1] + dy]);
+  }
+  return out;
+}
+function bbox(P) {
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  P.forEach(p => { x0 = Math.min(x0, p[0]); y0 = Math.min(y0, p[1]); x1 = Math.max(x1, p[0]); y1 = Math.max(y1, p[1]); });
+  return { x0, y0, x1, y1, w: x1 - x0, h: y1 - y0 };
+}
+function rectPiece(id, name, count, w, h, o) {
+  const sa = o.sa, bot = o.botSA == null ? sa : o.botSA;
+  return { id, name, count, note: o.note || '',
+    segs: [S([[0,0],[w,0]], o.topSA == null ? sa : o.topSA), S([[w,0],[w,h]], sa), S([[w,h],[0,h]], bot), S([[0,h],[0,0]], sa)],
+    darts: [], grain: w > h * 2 ? [[2.5, h * 0.78], [w - 2.5, h * 0.78]] : [[w / 2, 2.5], [w / 2, h - 2.5]], fold: null };
+}
+
+/* ---------- گشادی‌ها ---------- */
+function eases(g, fit) {
+  const t = {
+    tight:  { bust: 4,  waist: 2, hip: 4,  sleeve: 3, skirtHip: 3, pHip: 6,  pWaist: 1 },
+    normal: { bust: 8,  waist: 4, hip: 8,  sleeve: 6, skirtHip: 5, pHip: 10, pWaist: 2 },
+    loose:  { bust: 14, waist: 8, hip: 14, sleeve: 9, skirtHip: 8, pHip: 14, pWaist: 4 } }[fit];
+  const e = Object.assign({}, t);
+  if (g === 'formal' || g === 'bride')
+    Object.assign(e, { tight: { bust: 3, waist: 1.5 }, normal: { bust: 5, waist: 3 }, loose: { bust: 8, waist: 5 } }[fit]);
+  if (g === 'skirt') e.waist = { tight: 1, normal: 2, loose: 4 }[fit];
+  return e;
+}
+
+/* ---------- دامن ---------- */
+function skirtPieces(m, o) {
+  const W = m.W, H = m.H, L = o.len, HD = Math.min(m.HD || 20, L * 0.5);
+  const sa = o.sa, hem = o.hem, we = o.waistEase, he = o.hipEase, P = [];
+  const pre = o.prefix || 'دامن';
+  if (o.type === 'circle') {
+    const r = (W + we) / (2 * PI), R = r + L, n = 48, inner = [], outer = [];
+    for (let i = 0; i <= n; i++) { const a = PI * i / n;
+      inner.push([r * Math.cos(a), r * Math.sin(a)]); outer.push([R * Math.cos(a), R * Math.sin(a)]); }
+    P.push({ id: 'skirt-circle', name: pre + ' کلوش (نیم‌دایره)', count: '۲ عدد (جلو و پشت)',
+      note: 'شعاع کمر ' + num(r) + ' و شعاع لبه ' + num(R) + ' سانتی‌متر. لبهٔ پایین را بعد از آویزان‌کردن ۲۴ ساعته تراز کنید.',
+      segs: [S(inner, sa), S([inner[n], outer[n]], sa), S(outer.slice().reverse(), hem), S([outer[0], inner[0]], sa)],
+      darts: [], grain: [[0, r + 3], [0, R - 3]], fold: null });
+  } else if (o.type === 'gather') {
+    const tot = (W + we) * o.ratio, fw = tot / 2, bw = o.zip ? tot / 4 : tot / 2;
+    P.push(rectPiece('skirt-gf', pre + ' چین‌دار - جلو', '۱ عدد', fw, L, { sa, botSA: hem,
+      note: 'لبهٔ بالا را تا اندازهٔ ' + num((W + we) / 2) + ' سانتی‌متر چین بدهید.' }));
+    P.push(rectPiece('skirt-gb', pre + ' چین‌دار - پشت', o.zip ? '۲ عدد (درز پشت با زیپ)' : '۱ عدد', bw, L, { sa, botSA: hem,
+      note: 'لبهٔ بالا را تا اندازهٔ ' + num((W + we) / (o.zip ? 4 : 2)) + ' سانتی‌متر چین بدهید.' }));
+  } else {
+    const hipQ = (H + he) / 4, waistQ = (W + we) / 4;
+    const d = Math.max(0, hipQ - waistQ), s = Math.min(2.5, d * 0.4);
+    const dartTot = Math.max(0, d - s), Lw = hipQ - s;
+    const flare = o.flare;
+    const panel = back => {
+      const nd = dartTot < 0.8 ? 0 : (dartTot > 3.4 ? 2 : 1), dl = back ? 12 : 9, dw = nd ? dartTot / nd : 0;
+      const cs = nd === 0 ? [] : nd === 1 ? [Lw * 0.55] : [Lw * 0.38, Lw * 0.72];
+      const darts = cs.map(c => [[c - dw / 2, 0], [c, dl], [c + dw / 2, 0]]);
+      const cbSA = back && o.zip ? sa : 0;
+      return { id: back ? 'skirt-b' : 'skirt-f', name: pre + (back ? ' - پشت' : ' - جلو'),
+        count: back ? (o.zip ? '۲ عدد (درز پشت با زیپ)' : '۱ عدد روی تا') : '۱ عدد روی تا',
+        note: nd ? ('پنس: ' + num(dw) + ' سانتی‌متر عرض و ' + num(dl) + ' سانتی‌متر طول' + (nd > 1 ? ' (۲ عدد)' : '')) : '',
+        segs: [S([[0, 0], [Lw, 0]], sa), S(bez2([Lw, 0], [hipQ, HD * 0.45], [hipQ, HD]), sa),
+               S([[hipQ, HD], [hipQ + flare, L]], sa), S([[hipQ + flare, L], [0, L]], hem), S([[0, L], [0, 0]], cbSA)],
+        darts, grain: [[hipQ * 0.5, HD * 0.6], [hipQ * 0.5, L - 4]],
+        fold: cbSA === 0 ? [[0, 0], [0, L]] : null };
+    };
+    P.push(panel(false), panel(true));
+  }
+  if (o.band) P.push(rectPiece('waistband', 'کمربند', '۱ عدد', W + we + 3, 8, { sa, note: 'دولا؛ پهنای نهایی ۴ سانتی‌متر. ۳ سانتی‌متر برای رویهٔ زیپ.' }));
+  return P;
+}
+
+/* ---------- شلوار ---------- */
+function pantsPieces(m, o) {
+  const W = m.W, H = m.H, L = m.PL, CD = m.CD, sa = o.sa, hem = o.hem;
+  const HD = Math.min(m.HD || 20, CD - 5), he = o.hipEase, we = o.waistEase;
+  const Hq = (H + he) / 4, Hf = Hq - 1, Hb = Hq + 1, ef = H / 20, eb = H / 10 - 2;
+  const hemC = m.HEM || { straight: 44, slim: 36, wide: 56 }[o.type];
+  const thigh = Hf + Hb + ef + eb, kneeC = hemC + Math.max(0, thigh - hemC) * 0.28;
+  const yk = CD + (L - CD) / 2 - 4;
+  const panel = back => {
+    const Hp = back ? Hb : Hf, ext = back ? eb : ef, xc = (Hp + ext) / 2;
+    const hemW = hemC / 2 + (back ? 1 : -1), kneeW = kneeC / 2 + (back ? 1 : -1);
+    const wq = (W + we) / 4 + (back ? 0.5 : -0.5);
+    const CBx = Hp + 2.5, CBy = -2;
+    let s = Math.min(2, Math.max(0, (Hp - wq) * 0.4)), dartTot;
+    if (back) {
+      let Lw = Math.hypot(CBx - s, 2); dartTot = Lw - wq;
+      if (dartTot < 0.5) { dartTot = 0; s = Math.max(0, CBx - Math.sqrt(Math.max(0, wq * wq - 4))); Lw = Math.hypot(CBx - s, 2); }
+    } else {
+      dartTot = Hp - s - wq;
+      if (dartTot < 0.5) { dartTot = 0; s = Math.max(0, Hp - wq); }
+    }
+    const depth = Math.min(ext * 1.6, CD - HD - 1);
+    const nd = dartTot < 0.5 ? 0 : (dartTot > 3.2 ? 2 : 1), dw = nd ? dartTot / nd : 0, dl = back ? 12 : 9;
+    const edgeLen = back ? Math.hypot(CBx - s, 2) : Hp - s;
+    const cs = nd === 0 ? [] : nd === 1 ? [0.55] : [0.38, 0.72];
+    const darts = cs.map(f => {
+      const x = s + (back ? (CBx - s) : (Hp - s)) * f, y = back ? CBy * (x - s) / (CBx - s) : 0;
+      const x0 = x - dw / 2, x1 = x + dw / 2, yy = v => back ? CBy * (v - s) / (CBx - s) : 0;
+      return [[x0, yy(x0)], [x, y + dl], [x1, yy(x1)]];
+    });
+    const top = back ? S([[s, 0], [CBx, CBy]], sa) : S([[s, 0], [Hp, 0]], sa);
+    const center = back ? S([[CBx, CBy], [Hp, HD], [Hp, CD - depth]], sa) : S([[Hp, 0], [Hp, CD - depth]], sa);
+    return { id: back ? 'pants-b' : 'pants-f', name: 'شلوار - ' + (back ? 'پشت' : 'جلو'), count: '۲ عدد (چپ و راست)',
+      note: (nd ? 'پنس: ' + num(dw) + ' سانتی‌متر عرض' + (nd > 1 ? ' (۲ عدد)' : '') + '. ' : '') + 'پهنای پاچه ' + num(hemW) + ' سانتی‌متر.',
+      segs: [top, center, S(bez2([Hp, CD - depth], [Hp, CD], [Hp + ext, CD]), sa),
+             S([[Hp + ext, CD], [xc + kneeW / 2, yk], [xc + hemW / 2, L]], sa),
+             S([[xc + hemW / 2, L], [xc - hemW / 2, L]], hem),
+             S([[xc - hemW / 2, L], [xc - kneeW / 2, yk], [0, HD]], sa),
+             S(bez2([0, HD], [0, HD * 0.5], [s, 0]), sa)],
+      darts, grain: [[xc, HD + 3], [xc, L - 5]], fold: null };
+  };
+  return [panel(false), panel(true),
+    rectPiece('waistband', 'کمربند', '۱ عدد', W + we + 4, 8, { sa, note: 'دولا؛ پهنای نهایی ۴ سانتی‌متر. ۴ سانتی‌متر برای رویهٔ زیپ.' })];
+}
+
+/* ---------- بالاتنه (پیراهن، بلوز، لباس) ---------- */
+function topPieces(m, o) {
+  const E = o.E, dress = o.dress, sa = o.sa, hem = o.hem;
+  const B = m.B, H = m.H, N = m.N || 36, SW = m.SW || 38, BL = m.BL, W = m.W || B * 0.8;
+  const strap = o.neck === 'strapless';
+  const shaped = dress || o.fit === 'tight';
+  const Qb = (B + E.bust) / 4 - 0.5, Qf = (B + E.bust) / 4 + 0.5;
+  const yu = 14.5 + B / 12, yW = 2 + BL;
+  const hemY = dress ? yW : 2 + m.TL;
+  const nw0 = N / 5 - 0.2, nw = o.neck === 'boat' ? N / 5 + 4 : nw0, db = 2;
+  const df = { round: nw + 1.2, v: nw + 7, mandarin: 3.5, boat: 4, strapless: 0 }[o.neck];
+  const Qh = Math.max(Qb, (H + E.hip) / 4 - 0.5);     // نیم‌عرض لبهٔ پایین (پیراهن آزاد)
+  const QhT = (H + E.hip) / 4 - 0.5;                    // برای پیراهن تنگ
+  const dw = shaped ? Math.min(6, Math.max(2, 0.2 * (B - 78))) : 0;   // پنس سینه
+  const out = [];
+
+  /* شانه و حلقهٔ آستین */
+  const xtb = Math.max(nw + 4, Math.min(SW / 2 + 0.3, Qb - 1.5)), ytb = 4.5;
+  const Ls = Math.hypot(xtb - nw, ytb), ytf = 5.0;
+  const xtf = Math.min(Qf - 1.5, nw + Math.sqrt(Math.max(1, Ls * Ls - ytf * ytf)));
+  const armhole = (T, U, k) => bez3(T, [T[0] - 3.2 - 0.6 * k, T[1] + 0.5 * (U[1] - T[1])], [T[0] - 1.0 - 0.2 * k, U[1]], U, 32);
+  const neckCurve = (w, d, type) => type === 'v' ? [[0, d], [w, 0]] : bez3([0, d], [w * 0.55, d], [w, d * 0.6], [w, 0], 20);
+  let AH = 0, neckLen = 0;
+
+  /* شکل درز کنار: از زیر بغل تا لبهٔ پایین */
+  const sidePts = (Q, sw, qh, yBot) => {
+    const sideX = y => y <= yW ? Q - sw * (y - yu) / (yW - yu) : (Q - sw) + (qh - (Q - sw)) * (y - yW) / Math.max(1, yBot - yW);
+    const pts = [[Q, yu]];
+    if (shaped && yW > yu + 2 && yW < yBot - 1) pts.push([Q - sw, yW]);
+    pts.push([sideX(yBot), yBot]);
+    return { pts, sideX };
+  };
+  const waistInfo = (Qq, Wq) => {
+    const r = Qq - Wq, sw = shaped ? Math.min(2.2, Math.max(0, r * 0.35)) : 0;
+    const d = shaped ? Math.max(0, Qq - sw - Wq) : 0;
+    return { sw, d };
+  };
+
+  /* ===== پشت ===== */
+  {
+    const wi = waistInfo(Qb, (W + E.waist) / 4 - 0.5);
+    const qh = shaped ? Math.max(QhT, Qb - wi.sw) : Qh;
+    const sp = sidePts(Qb, wi.sw, qh, hemY);
+    const xBot = sp.pts[sp.pts.length - 1][0];
+    const cbSA = dress ? sa : 0;
+    const botSA = dress ? sa : hem;
+    let segs, darts = [];
+    if (!strap) {
+      const nk = neckCurve(nw, db, 'round'); neckLen += plen(nk);
+      const ah = armhole([xtb, ytb], [Qb, yu], 0); AH += plen(ah);
+      segs = [S(nk, sa), S([[nw, 0], [xtb, ytb]], sa), S(ah, sa), S(sp.pts, sa)];
+    } else {
+      segs = [S([[0, yu - 4], [Qb * 0.5, yu - 3.5], [Qb, yu - 2.5]], sa), S(sp.pts, sa)];
+    }
+    segs.push(S([[xBot, hemY], [0, hemY]], botSA));
+    segs.push(S([[0, hemY], [0, strap ? yu - 4 : db]], cbSA));
+    if (shaped && hemY >= yW - 0.5 && wi.d > 0.6) {
+      const Lw = Qb - wi.sw, n = wi.d > 4.5 ? 2 : 1;
+      (n === 1 ? [[Lw * 0.45, wi.d, 14]] : [[Lw * 0.32, wi.d * 0.55, 14], [Lw * 0.68, wi.d * 0.45, 11]])
+        .forEach(([c, w, l]) => darts.push([[c - w / 2, yW], [c, yW - l], [c + w / 2, yW]]));
+    }
+    out.push({ id: 'top-b', name: (dress ? 'بالاتنه' : 'بدنه') + ' - پشت', count: dress ? '۲ عدد (درز پشت با زیپ)' : '۱ عدد روی تا',
+      note: darts.length ? ('پنس کمر: ' + darts.map(d => num(d[2][0] - d[0][0])).join(' و ') + ' سانتی‌متر') : '',
+      segs, darts, grain: [[Qb * 0.45, yu + 2], [Qb * 0.45, Math.min(hemY - 3, yu + 22)]],
+      fold: cbSA === 0 ? [[0, db], [0, hemY]] : null });
+  }
+
+  /* ===== جلو ===== */
+  {
+    const wi = waistInfo(Qf, (W + E.waist) / 4 + 0.5);
+    const yWf = yW + dw, yBot = hemY + dw;
+    const qh = shaped ? Math.max(QhT, Qf - wi.sw) : Qh;
+    // برای ساخت خط کنار جلو، تراز کمر جلو را جابه‌جا می‌کنیم
+    const sideX = y => y <= yWf ? Qf - wi.sw * (y - yu) / (yWf - yu) : (Qf - wi.sw) + (qh - (Qf - wi.sw)) * (y - yWf) / Math.max(1, yBot - yWf);
+    const pts = [[Qf, yu]];
+    if (shaped && yWf > yu + 2 && yWf < yBot - 1) pts.push([Qf - wi.sw, yWf]);
+    pts.push([sideX(yBot), yBot]);
+    const xBot = pts[pts.length - 1][0];
+    let segs, darts = [], marks = [];
+    if (!strap) {
+      const nk = neckCurve(nw, df, o.neck); neckLen += plen(nk);
+      const ah = armhole([xtf, ytf], [Qf, yu], 1); AH += plen(ah);
+      segs = [S(nk, sa), S([[nw, 0], [xtf, ytf]], sa), S(ah, sa), S(pts, sa)];
+    } else {
+      segs = [S(bez2([0, yu - 1], [Qf * 0.5, yu - 5.5], [Qf, yu - 2.5]), sa), S(pts, sa)];
+    }
+    segs.push(S([[xBot, yBot], [0, yBot]], dress ? sa : hem));
+    segs.push(S([[0, yBot], [0, strap ? yu - 1 : df]], 0));
+    const xa = Math.min(Qf - 4, B / 10 + 0.7), yb = yu + 1.2;
+    if (shaped) {   // پنس سینه از درز کنار
+      const y1 = yu + 3.5, y2 = y1 + dw, ym = (y1 + y2) / 2, xs1 = sideX(y1), xs2 = sideX(y2), xsm = sideX(ym);
+      const vx = xsm - xa, vy = ym - yb, vl = Math.hypot(vx, vy) || 1;
+      darts.push([[xs1, y1], [xa + vx / vl * 3, yb + vy / vl * 3], [xs2, y2]]);
+    }
+    if (shaped && hemY >= yW - 0.5 && wi.d > 0.6) {
+      const Lw = Qf - wi.sw, n = wi.d > 4.8 ? 2 : 1;
+      const list = n === 1 ? [[xa, wi.d, yWf - (yb + 3.5)]] : [[xa, wi.d * 0.6, yWf - (yb + 3.5)], [xa + (Lw - xa) * 0.55, wi.d * 0.4, 8]];
+      list.forEach(([c, w, l]) => darts.push([[c - w / 2, yWf], [c, yWf - l], [c + w / 2, yWf]]));
+    }
+    const ndarts = darts.length;
+    out.push({ id: 'top-f', name: (dress ? 'بالاتنه' : 'بدنه') + ' - جلو', count: '۱ عدد روی تا',
+      note: shaped ? ('پنس سینه ' + num(dw) + ' سانتی‌متر' + (ndarts > 1 ? ' و پنس کمر ' + darts.slice(1).map(d => num(d[2][0] - d[0][0])).join(' و ') + ' سانتی‌متر' : '')) : '',
+      segs, darts, grain: [[Qf * 0.45, yu + 2], [Qf * 0.45, Math.min(yBot - 3, yu + 22)]],
+      fold: [[0, strap ? yu - 1 : df], [0, yBot]] });
+  }
+
+  /* ===== آستین ===== */
+  if (!strap && o.sleeve !== 'none') {
+    const long = o.sleeve.indexOf('long') === 0, puff = /puff$/.test(o.sleeve);
+    const SL = m.SL, UA = m.UA, WR = m.WR || UA * 0.55;
+    const w = UA + E.sleeve, target = Math.max(w + 2, AH + (puff ? 3 : 2.5));
+    const cap = (ww, ch) => {
+      const left = bez3([0, ch], [0.08 * ww, 0.55 * ch], [0.28 * ww, 0], [0.5 * ww, 0], 24);
+      const right = left.slice(0, -1).reverse().map(p => [ww - p[0], p[1]]);
+      return left.concat(right);
+    };
+    let lo = 1, hi = 28;
+    for (let i = 0; i < 45; i++) { const mid = (lo + hi) / 2; if (plen(cap(w, mid)) < target) lo = mid; else hi = mid; }
+    const ch = (lo + hi) / 2, cp = cap(w, ch);
+    let hY = SL + (puff ? (long ? 5 : 3) : 0); hY = Math.max(hY, ch + 4);
+    const hW = long ? (puff ? w + 10 : Math.max(WR + 5, 14)) : (puff ? w + 6 : w * 0.94);
+    const xl = w / 2 - hW / 2, xr = w / 2 + hW / 2;
+    out.push({ id: 'sleeve', name: 'آستین ' + (long ? 'بلند' : 'کوتاه') + (puff ? ' پفی' : ''), count: '۲ عدد (چپ و راست)',
+      note: 'ارتفاع سرآستین ' + num(ch) + ' سانتی‌متر؛ دور حلقه ' + num(AH) + ' سانتی‌متر (با ' + num(target - AH) + ' سانتی‌متر گنجایش).' +
+            (puff ? ' ته آستین را تا اندازهٔ مچ‌بند یا کش چین بدهید.' : ''),
+      segs: [S(cp, sa), S([[w, ch], [xr, hY]], sa), S([[xr, hY], [xl, hY]], puff ? sa : hem), S([[xl, hY], [0, ch]], sa)],
+      darts: [], grain: [[w / 2, ch * 0.6], [w / 2, hY - 3]], fold: null });
+    if (long && puff) out.push(rectPiece('cuff', 'مچ‌بند آستین', '۲ عدد', WR + 5, 6, { sa, note: 'دولا؛ پهنای نهایی ۳ سانتی‌متر.' }));
+  }
+  /* ===== یقهٔ آخوندی ===== */
+  if (o.neck === 'mandarin')
+    out.push(rectPiece('collar', 'یقهٔ آخوندی (بند یقه)', '۱ عدد', neckLen * 2 + 2.5, 4.5, { sa, note: 'دولا؛ پهنای نهایی ۳٫۵ سانتی‌متر؛ ۲٫۵ سانتی‌متر روی‌هم‌افتادگی دکمه.' }));
+  out.meta = { AH, neckLen, yu, yW };
+  return out;
+}
+
+/* ---------- ساخت الگو ---------- */
+const FIELDS = {
+  W:   { label: 'دور کمر',  hint: 'دور باریک‌ترین قسمت کمر', min: 40, max: 160 },
+  H:   { label: 'دور باسن', hint: 'دور پهن‌ترین قسمت باسن', min: 60, max: 190 },
+  B:   { label: 'دور سینه', hint: 'دور پهن‌ترین قسمت سینه', min: 60, max: 170 },
+  N:   { label: 'دور گردن', hint: 'دور پایهٔ گردن؛ خالی بگذارید تا ۳۶ در نظر گرفته شود', min: 28, max: 50, opt: true },
+  SW:  { label: 'عرض شانه', hint: 'از نوک یک شانه تا نوک شانهٔ دیگر، از پشت', min: 30, max: 55 },
+  BL:  { label: 'قد پشت تا کمر', hint: 'از برجستگی پشت گردن تا کمر؛ معمولاً ۳۸ تا ۴۳', min: 34, max: 52 },
+  TL:  { label: 'قد کل لباس', hint: 'از پشت گردن تا لبهٔ پایین لباس', min: 40, max: 230 },
+  SL:  { label: 'قد آستین', hint: 'از نوک شانه تا لبهٔ آستین', min: 8, max: 75 },
+  UA:  { label: 'دور بازو', hint: 'دور پهن‌ترین قسمت بازو', min: 18, max: 60 },
+  WR:  { label: 'دور مچ', hint: 'دور مچ دست', min: 12, max: 28 },
+  SKL: { label: 'قد دامن', hint: 'از کمر تا لبهٔ دامن', min: 20, max: 160 },
+  HD:  { label: 'فاصلهٔ کمر تا باسن', hint: 'اختیاری؛ خالی بگذارید تا ۲۰ در نظر گرفته شود', min: 12, max: 30, opt: true },
+  PL:  { label: 'قد شلوار', hint: 'از کمر تا کف پا', min: 60, max: 130 },
+  CD:  { label: 'قد فاق', hint: 'نشسته، از کمر تا صندلی؛ معمولاً ۲۴ تا ۲۹', min: 20, max: 40 },
+  HEM: { label: 'دور پاچه', hint: 'اختیاری؛ خالی بگذارید تا طبق مدل تعیین شود', min: 25, max: 90, opt: true }
+};
+const isDress = g => g === 'formal' || g === 'bride';
+function neededFields(st) {
+  const g = st.garment;
+  if (g === 'skirt') return ['W', 'H', 'SKL', 'HD'];
+  if (g === 'pants') return ['W', 'H', 'PL', 'CD', 'HD', 'HEM'];
+  const dress = isDress(g), shaped = dress || st.fit === 'tight', strap = st.type === 'strapless', f = ['B'];
+  if (shaped) f.push('W');
+  f.push('H');
+  if (!strap) f.push('N', 'SW');
+  f.push('BL', 'TL');
+  if (!strap && st.sleeve && st.sleeve !== 'none') { f.push('SL', 'UA'); if (st.sleeve.indexOf('long') === 0) f.push('WR'); }
+  if (dress) f.push('HD');
+  return f;
+}
+function fieldInfo(st, k) {
+  const f = Object.assign({}, FIELDS[k]), dress = isDress(st.garment);
+  if (k === 'TL') f.hint = dress ? 'از پشت گردن تا لبهٔ پایین دامن (کف پا)' : 'از پشت گردن تا لبهٔ پایین لباس';
+  if (k === 'SL') f.hint = st.sleeve && st.sleeve.indexOf('long') === 0 ? 'از نوک شانه تا مچ؛ معمولاً ۵۶ تا ۶۲' : 'از نوک شانه تا لبهٔ آستین؛ معمولاً ۱۸ تا ۲۵';
+  if (k === 'SL') f.min = st.sleeve && st.sleeve.indexOf('long') === 0 ? 40 : 8;
+  return f;
+}
+function parseVals(st) {
+  const m = {};
+  neededFields(st).forEach(k => { const v = parseFloat(String(st.vals[k] == null ? '' : st.vals[k]).replace(/[٫,]/g, '.').replace(/[۰-۹]/g, d => FA.indexOf(d))); if (!isNaN(v)) m[k] = v; });
+  return m;
+}
+function validate(st) {
+  const m = parseVals(st), errs = {}, warns = [];
+  neededFields(st).forEach(k => {
+    const f = fieldInfo(st, k);
+    if (m[k] == null) { if (!f.opt) errs[k] = 'این اندازه لازم است'; return; }
+    if (m[k] < f.min || m[k] > f.max) errs[k] = 'عدد باید بین ' + fa(f.min) + ' و ' + fa(f.max) + ' باشد';
+  });
+  if (!Object.keys(errs).length) {
+    if (m.W && m.H && m.W > m.H + 2) warns.push('دور کمر از دور باسن بزرگ‌تر است؛ اندازه‌ها را دوباره بررسی کنید.');
+    if (isDress(st.garment) && m.TL && m.BL && m.TL - m.BL < 20) errs.TL = 'قد کل باید دست‌کم ۲۰ سانتی‌متر از قد پشت تا کمر بیشتر باشد';
+    if (!isDress(st.garment) && st.garment === 'shirt' && m.TL && m.BL && m.TL < m.BL - 5) warns.push('قد لباس از کمر کوتاه‌تر است؛ الگو به‌صورت کراپ ساخته می‌شود.');
+    if (st.garment === 'pants' && m.PL && m.CD && m.PL < m.CD + 20) errs.PL = 'قد شلوار باید دست‌کم ۲۰ سانتی‌متر از قد فاق بیشتر باشد';
+  }
+  return { errs, warns, m };
+}
+function build(st) {
+  const v = validate(st);
+  if (Object.keys(v.errs).length) return { errs: v.errs };
+  const m = v.m, sa = +st.sa, hem = +st.hem, g = st.garment, E = eases(g, st.fit), pieces = [];
+  const notes = [];
+  if (g === 'skirt') {
+    const flare = st.type === 'straight' ? (st.fit === 'tight' ? -1.5 : 0) : { tight: 4.5, normal: 6, loose: 8 }[st.fit];
+    skirtPieces(m, { type: st.type, sa, hem, waistEase: E.waist, hipEase: E.skirtHip, flare, len: m.SKL, band: true, prefix: 'دامن' }).forEach(p => pieces.push(p));
+    notes.push('پشت دامن را برای جاگذاشتن زیپ، در یکی از درزهای کنار باز بگذارید.');
+  } else if (g === 'pants') {
+    pantsPieces(m, { type: st.type, sa, hem, hipEase: E.pHip, waistEase: E.pWaist }).forEach(p => pieces.push(p));
+    notes.push('جای زیپ جلو و جیب‌ها در این الگو در نظر گرفته نشده است؛ هنگام برش اضافه کنید.');
+  } else {
+    const dress = isDress(g);
+    const tops = topPieces(m, { E, dress, sa, hem, neck: st.type, sleeve: st.sleeve || 'none', fit: st.fit });
+    tops.forEach(p => pieces.push(p));
+    if (dress) {
+      const flare = st.skirtType === 'aline' ? { tight: 6, normal: 9, loose: 12 }[st.fit] : 0;
+      skirtPieces(m, { type: st.skirtType, sa, hem, waistEase: E.waist, hipEase: Math.max(E.skirtHip, 5), flare, len: m.TL - m.BL,
+        ratio: g === 'bride' ? 2 : 1.7, zip: true, band: false, prefix: 'دامن' }).forEach(p => pieces.push(p));
+      notes.push('دامن را با درز کمر به بالاتنه بدوزید؛ پشت لباس با زیپ بسته می‌شود.');
+      if (st.type === 'strapless') notes.push('برای بالاتنهٔ دکلته از آستر و استخوان‌بندی (بونینگ) کمک بگیرید.');
+    } else if (st.type !== 'strapless') {
+      notes.push('لبهٔ یقه را با بایاس یا رویه تمیز کنید. بازشدگی جلو یا پشت (زیپ، دکمه) در الگو منظور نشده است.');
+    }
+    if (tops.meta && tops.meta.AH) notes.push('دور حلقهٔ آستین: ' + num(tops.meta.AH) + ' سانتی‌متر.');
+  }
+  return { pieces, notes, warns: v.warns, m, E };
+}
+
+/* ---------- چیدمان روی برگ ---------- */
+const TILE_W = 190, TILE_H = 277;   // میلی‌متر (A4 با حاشیهٔ ۱ سانتی‌متر)
+function prepare(pieces) {
+  return pieces.map(p => {
+    const ol = outline(p), cut = offsetPoly(ol.P, ol.E), bb = bbox(cut);
+    return { p, stitch: ol.P, cut, bb };
+  });
+}
+function pack(items, maxW, pad) {
+  const list = items.slice().sort((a, b) => b.bb.h - a.bb.h);
+  let x = pad, y = pad, rowH = 0, W = 0;
+  const placed = [];
+  list.forEach(it => {
+    const w = it.bb.w + pad, h = it.bb.h + pad;
+    if (x + w > maxW && x > pad) { x = pad; y += rowH; rowH = 0; }
+    placed.push({ it, ox: x, oy: y }); x += w; rowH = Math.max(rowH, h); W = Math.max(W, x);
+  });
+  return { placed, W, H: y + rowH + pad };
+}
+function tilesFor(items, W, H) {
+  const cols = Math.ceil(W * 10 / TILE_W), rows = Math.ceil(H * 10 / TILE_H), used = [];
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+    const x0 = c * TILE_W / 10, y0 = r * TILE_H / 10, x1 = x0 + TILE_W / 10, y1 = y0 + TILE_H / 10;
+    if (items.some(q => { const b = q.it.bb; const bx0 = b.x0 + q.dx, by0 = b.y0 + q.dy;
+      return bx0 < x1 && bx0 + b.w > x0 && by0 < y1 && by0 + b.h > y0; })) used.push({ r, c });
+  }
+  return { cols, rows, used };
+}
+function layout(pieces) {
+  const items = prepare(pieces), sq = { sq: true, bb: { x0: 0, y0: 0, w: 10, h: 10 } };
+  let best = null;
+  [38, 57, 76, 95].forEach(mw => {
+    const maxW = mw;
+    const all = items.concat([{ it0: 1, p: null, sq: true, stitch: [], cut: [[0, 0], [10, 0], [10, 10], [0, 10]], bb: { x0: 0, y0: 0, w: 10, h: 10, x1: 10, y1: 10 } }]);
+    const pk = pack(all, maxW, 1.5);
+    const placed = pk.placed.map(q => ({ it: q.it, dx: q.ox - q.it.bb.x0, dy: q.oy - q.it.bb.y0 }));
+    const t = tilesFor(placed, pk.W, pk.H);
+    if (!best || t.used.length < best.t.used.length) best = { placed, W: pk.W, H: pk.H, t };
+  });
+  return best;
+}
+
+/* ---------- ترسیم SVG (واحد: میلی‌متر) ---------- */
+const f1 = x => (Math.round(x * 100) / 100);
+function pathD(P, dx, dy, close) { return 'M' + P.map(p => f1((p[0] + dx) * 10) + ' ' + f1((p[1] + dy) * 10)).join('L') + (close ? 'Z' : ''); }
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+function sheetMarkup(lay) {
+  let s = '';
+  lay.placed.forEach(q => {
+    const it = q.it, dx = q.dx, dy = q.dy;
+    if (it.sq) {
+      s += '<g><path class="cut" d="' + pathD(it.cut, dx, dy, true) + '"/>' +
+        '<text class="lbl" x="' + f1((dx + 5) * 10) + '" y="' + f1((dy + 4.2) * 10) + '" text-anchor="middle">مربع آزمون</text>' +
+        '<text class="sm" x="' + f1((dx + 5) * 10) + '" y="' + f1((dy + 6.2) * 10) + '" text-anchor="middle">' + fa('10×10') + ' سانتی‌متر</text></g>';
+      return;
+    }
+    const p = it.p;
+    s += '<g data-piece="' + p.id + '">';
+    s += '<path class="cut" d="' + pathD(it.cut, dx, dy, true) + '"/>';
+    s += '<path class="stitch" d="' + pathD(it.stitch, dx, dy, true) + '"/>';
+    p.darts.forEach(d => { s += '<path class="stitch" d="' + pathD(d, dx, dy, false) + '"/>'; });
+    if (p.fold) s += '<path class="fold" d="' + pathD(p.fold, dx, dy, false) + '"/>';
+    if (p.grain) {
+      const a = p.grain[0], b = p.grain[1];
+      const ax = (a[0] + dx) * 10, ay = (a[1] + dy) * 10, bx = (b[0] + dx) * 10, by = (b[1] + dy) * 10;
+      const gl = Math.hypot(bx - ax, by - ay) || 1, ux = (bx - ax) / gl, uy = (by - ay) / gl, px = -uy, py = ux;
+      const head = (X, Y, sg) => 'M' + f1(X) + ' ' + f1(Y) + 'L' + f1(X + sg * 6 * ux + 2.2 * px) + ' ' + f1(Y + sg * 6 * uy + 2.2 * py) + 'L' + f1(X + sg * 6 * ux - 2.2 * px) + ' ' + f1(Y + sg * 6 * uy - 2.2 * py) + 'Z';
+      s += '<path class="grain" d="M' + f1(ax) + ' ' + f1(ay) + 'L' + f1(bx) + ' ' + f1(by) + '"/>' +
+        '<path class="arrow" d="' + head(ax, ay, 1) + head(bx, by, -1) + '"/>';
+    }
+    const horiz = p.grain && Math.abs(p.grain[0][1] - p.grain[1][1]) < 1e-6;
+    const cx = (it.bb.x0 + it.bb.w / 2 + dx) * 10 + (p.grain && !horiz ? 9 : 0), cy = (it.bb.y0 + it.bb.h * (horiz ? 0.38 : 0.5) + dy) * 10;
+    s += '<text class="lbl" x="' + f1(cx) + '" y="' + f1(cy) + '" text-anchor="middle">' + esc(p.name) + '</text>' +
+         '<text class="sm" x="' + f1(cx) + '" y="' + f1(cy + 7) + '" text-anchor="middle">' + esc(p.count) + '</text>';
+    s += '</g>';
+  });
+  return s;
+}
+function tileSVG(lay, c, r, total, idx) {
+  const x = c * TILE_W, y = r * TILE_H, m = 4;
+  const cross = (px, py) => '<path class="mark" d="M' + (px - m) + ' ' + py + 'h' + 2 * m + 'M' + px + ' ' + (py - m) + 'v' + 2 * m + '"/>';
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="' + TILE_W + 'mm" height="' + TILE_H + 'mm" viewBox="' + x + ' ' + y + ' ' + TILE_W + ' ' + TILE_H + '">' +
+    '<g>' + sheetMarkup(lay) + '</g>' +
+    '<rect class="frame" x="' + (x + 0.15) + '" y="' + (y + 0.15) + '" width="' + (TILE_W - 0.3) + '" height="' + (TILE_H - 0.3) + '"/>' +
+    cross(x + 6, y + 6) + cross(x + TILE_W - 6, y + 6) + cross(x + 6, y + TILE_H - 6) + cross(x + TILE_W - 6, y + TILE_H - 6) +
+    '<text class="pg" x="' + (x + TILE_W / 2) + '" y="' + (y + 8) + '" text-anchor="middle">' + fa('برگ ' + idx + ' از ' + total + ' — ردیف ' + (r + 1) + '، ستون ' + (c + 1)) + '</text></svg>';
+}
+function sheetSVG(lay) {
+  const W = lay.W * 10, H = lay.H * 10;
+  return '<svg xmlns="http://www.w3.org/2000/svg" class="sheet" width="' + f1(W) + 'mm" height="' + f1(H) + 'mm" viewBox="0 0 ' + f1(W) + ' ' + f1(H) + '">' +
+    '<style>.cut{fill:#fff;stroke:#1B2A41;stroke-width:.7}.stitch{fill:none;stroke:#C0392B;stroke-width:.35;stroke-dasharray:3 2}.fold{fill:none;stroke:#1B2A41;stroke-width:.5;stroke-dasharray:8 2 1.5 2}' +
+    '.grain{stroke:#1B2A41;stroke-width:.4}.arrow{fill:#1B2A41}.lbl{font:700 6px Tahoma,sans-serif;fill:#1B2A41;direction:rtl}.sm{font:4.2px Tahoma,sans-serif;fill:#44546a;direction:rtl}</style>' +
+    '<rect width="' + f1(W) + '" height="' + f1(H) + '" fill="#fff"/>' + sheetMarkup(lay) + '</svg>';
+}
+if (false) module.exports = { build, validate, neededFields, fieldInfo, layout, sheetSVG, tileSVG, sheetMarkup, eases, FIELDS, outline, offsetPoly, bbox, plen, fa, num, isDress };
+
+/* ===== خیاط یار — رابط کاربری ===== */
+const $ = s => document.querySelector(s);
+const GARMENTS = [
+  ['skirt', 'دامن', 'راسته، ای‌لاین، کلوش'],
+  ['pants', 'شلوار', 'راسته، اسلیم، پاچه‌گشاد'],
+  ['shirt', 'پیراهن / بلوز', 'یقه و آستین دلخواه'],
+  ['formal', 'لباس مجلسی زنانه', 'بالاتنه و دامن'],
+  ['bride', 'لباس عروس', 'بالاتنه و دامن پفی یا کلوش']];
+const NECKS = [['round', 'یقه گرد', 'گود و نرم'], ['v', 'یقه هفت', 'باز و کشیده'], ['mandarin', 'یقه آخوندی', 'ایستاده با بند یقه'], ['boat', 'یقه قایقی (بازو)', 'پهن و کم‌گودی']];
+const OPTS = {
+  skirt: [['straight', 'راسته', 'مستقیم، بدون چین'], ['aline', 'ای‌لاین (A)', 'از باسن به بعد گشاد می‌شود'], ['circle', 'کلوش (دایره‌ای)', 'پرحجم، با پایین گرد']],
+  pants: [['straight', 'راسته', 'پاچهٔ معمولی'], ['slim', 'تنگ (اسلیم)', 'پاچهٔ باریک'], ['wide', 'پاچه‌گشاد', 'پاچهٔ پهن']],
+  sleeve: [['long', 'بلند ساده', 'تا مچ'], ['short', 'کوتاه ساده', 'بالای آرنج'], ['longpuff', 'بلند پفی', 'چین در مچ‌بند'], ['shortpuff', 'کوتاه پفی', 'چین در لبهٔ آستین'], ['none', 'بدون آستین', 'فقط حلقهٔ بازو']],
+  skirtType: [['aline', 'ای‌لاین', 'گشاد شونده از کمر'], ['circle', 'کلوش', 'دایره‌ای و پرحجم'], ['gather', 'چین‌دار (پفی)', 'مستطیل چین‌خورده']],
+  fit: [['tight', 'تنگ', 'چسبان به بدن'], ['normal', 'معمولی', 'راحت و استاندارد'], ['loose', 'آزاد', 'گشاد و گنجایش زیاد']]
+};
+const TITLES = { garment: 'چه لباسی می‌دوزید؟', type: '', sleeve: 'آستین را انتخاب کنید', skirtType: 'مدل دامن لباس', fit: 'گشادی لباس', measures: 'اندازه‌ها را وارد کنید', result: 'الگوی شما آماده است' };
+const SHORT = { garment: 'مدل لباس', type: 'نوع', sleeve: 'آستین', skirtType: 'دامن', fit: 'گشادی', measures: 'اندازه‌ها', result: 'الگو' };
+
+const st = { zoom: false, step: 'garment', garment: null, type: null, sleeve: null, skirtType: null, fit: null, vals: {}, sa: 1, hem: 3, customer: '', photo: null, errs: {}, lay: null, res: null };
+const app = $('#app');
+
+function dress() { return isDress(st.garment); }
+function isTop() { return ['shirt', 'formal', 'bride'].indexOf(st.garment) >= 0; }
+function steps() {
+  const s = ['garment', 'type'];
+  if (isTop() && st.type !== 'strapless') s.push('sleeve');
+  if (dress()) s.push('skirtType');
+  s.push('fit', 'measures', 'result');
+  return s;
+}
+function typeOptions() { return isTop() ? NECKS.concat(dress() ? [['strapless', 'دکلته (بدون‌بند)', 'بالاتنه بدون شانه']] : []) : OPTS[st.garment]; }
+function typeTitle() { return isTop() ? 'نوع یقه' : 'مدل ' + (st.garment === 'skirt' ? 'دامن' : 'شلوار'); }
+function labelOf(step) {
+  const find = (arr, v) => { const r = arr.filter(x => x[0] === v)[0]; return r ? r[1] : ''; };
+  if (step === 'garment') return find(GARMENTS, st.garment);
+  if (step === 'type') return find(typeOptions(), st.type);
+  if (step === 'sleeve') return find(OPTS.sleeve, st.sleeve);
+  if (step === 'skirtType') return find(OPTS.skirtType, st.skirtType);
+  if (step === 'fit') return find(OPTS.fit, st.fit);
+  return '';
+}
+function go(step) { st.step = step; render(); window.scrollTo(0, 0); }
+function next() { const s = steps(); go(s[s.indexOf(st.step) + 1]); }
+function choose(step, v) {
+  if (step === 'garment' && v !== st.garment) { st.type = st.sleeve = st.skirtType = null; st.vals = {}; st.hem = v === 'pants' ? 4 : 3; }
+  if (step === 'type' && v === 'strapless') st.sleeve = null;
+  st[step] = v; next();
+}
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+
+/* ----- بایگانی مشتری ----- */
+function custAll() { try { return JSON.parse(localStorage.getItem('kyar_customers') || '{}'); } catch (e) { return {}; } }
+function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('on'); setTimeout(() => el.classList.remove('on'), 2200); }
+
+/* ----- رندر ----- */
+function chips() {
+  const done = steps().filter(s => s !== 'measures' && s !== 'result' && st[s] != null && steps().indexOf(s) < steps().indexOf(st.step));
+  if (!done.length) return '';
+  return '<div class="chips">' + done.map(s => '<button class="chip" data-act="goto" data-v="' + s + '"><small>' + SHORT[s] + '</small> ' + esc(labelOf(s)) + '</button>').join('') + '</div>';
+}
+function optionStep(step) {
+  const list = step === 'garment' ? GARMENTS : step === 'type' ? typeOptions() : OPTS[step];
+  const title = step === 'type' ? typeTitle() : TITLES[step];
+  let h = chips() + '<h2>' + title + '</h2><div class="grid">';
+  list.forEach(o => { h += '<button class="opt' + (st[step] === o[0] ? ' sel' : '') + '" data-act="choose" data-step="' + step + '" data-v="' + o[0] + '"><b>' + o[1] + '</b><span>' + o[2] + '</span></button>'; });
+  h += '</div>';
+  if (step === 'garment') {
+    h += '<div class="photo"><b>عکس لباس دلخواه مشتری (اختیاری)</b><br><label class="ghost filebtn" for="photoIn">' + (st.photo ? 'تغییر عکس' : 'انتخاب عکس') + '</label><input id="photoIn" class="sr" type="file" accept="image/*">' +
+      (st.photo ? '<img src="' + st.photo + '" alt="عکس مرجع">' : '<p>عکس فقط برای نگاه‌کردن خیاط کنار الگو نگه داشته می‌شود؛ مدل را شما از مرحله‌های بعد انتخاب می‌کنید.</p>') + '</div>';
+  }
+  if (step !== 'garment') h += '<div class="nav"><button class="ghost" data-act="back">مرحلهٔ قبل</button></div>';
+  return h;
+}
+function measureStep() {
+  const keys = neededFields(st), cust = custAll(), names = Object.keys(cust);
+  let h = chips() + '<h2>' + TITLES.measures + '</h2><p class="lead">اندازه‌ها را با متر نواری بر حسب سانتی‌متر و روی تن مشتری بگیرید.</p>';
+  h += '<div class="cust"><input id="custName" type="text" placeholder="نام مشتری" value="' + esc(st.customer) + '">' +
+    '<button class="ghost" data-act="saveCust">ذخیرهٔ اندازه‌ها</button>' +
+    (names.length ? '<select id="custSel"><option value="">باز کردن مشتری ذخیره‌شده…</option>' + names.map(n => '<option>' + esc(n) + '</option>').join('') + '</select>' : '') + '</div>';
+  h += '<div class="fields">';
+  keys.forEach(k => {
+    const f = fieldInfo(st, k), v = st.vals[k] == null ? '' : st.vals[k];
+    h += '<div class="fld' + (st.errs[k] ? ' bad' : '') + '"><label for="f_' + k + '">' + f.label + (f.opt ? ' <em>اختیاری</em>' : '') + '</label>' +
+      '<input id="f_' + k + '" data-k="' + k + '" inputmode="decimal" autocomplete="off" value="' + esc(v) + '"><small>' + (st.errs[k] ? esc(st.errs[k]) : f.hint) + '</small></div>';
+  });
+  h += '</div><div class="fields two">' +
+    '<div class="fld"><label for="sa">ضریب دوخت (سانتی‌متر)</label><input id="sa" data-g="sa" inputmode="decimal" value="' + esc(st.sa) + '"><small>روی همهٔ لبه‌ها اضافه می‌شود</small></div>' +
+    '<div class="fld"><label for="hem">لبهٔ تا (سانتی‌متر)</label><input id="hem" data-g="hem" inputmode="decimal" value="' + esc(st.hem) + '"><small>برای لبهٔ پایین لباس</small></div></div>';
+  h += '<div class="nav"><button class="ghost" data-act="back">مرحلهٔ قبل</button><button class="ghost" data-act="sample">اندازهٔ نمونه (سایز ۴۰)</button><button class="primary" data-act="make">ساخت الگو</button></div>';
+  if (st.formErr) h += '<p class="err">' + esc(st.formErr) + '</p>';
+  return h;
+}
+function resultStep() {
+  const r = st.res, lay = st.lay, bbs = {};
+  lay.placed.forEach(q => { if (q.it.p) bbs[q.it.p.id] = q.it.bb; });
+  const n = lay.t.used.length;
+  let h = chips() + '<h2>' + TITLES.result + '</h2>';
+  h += '<div class="chips fixed"><span class="chip"><small>گشادی</small> ' + labelOf('fit') + '</span>' + (st.customer ? '<span class="chip"><small>مشتری</small> ' + esc(st.customer) + '</span>' : '') +
+    '<span class="chip"><small>ضریب دوخت</small> ' + num(st.sa) + ' سانتی‌متر</span></div>';
+  h += '<div class="acts"><button class="primary" data-act="print">چاپ / ذخیرهٔ PDF (۱:۱)</button><button class="ghost" data-act="svg">دانلود SVG</button><button class="ghost" data-act="edit">ویرایش اندازه‌ها</button><button class="ghost" data-act="reset">طرح جدید</button></div>';
+  h += '<p class="pages">این الگو روی <b>' + fa(n) + ' برگ A4</b> چاپ می‌شود. در پنجرهٔ چاپ، مقیاس را <b>۱۰۰٪ (Actual size)</b> بگذارید و «Fit to page» را خاموش کنید؛ سپس مربع ۱۰×۱۰ را با خط‌کش بسنجید.</p>';
+  if (n > 30) h += '<p class="warn">این الگو برگ‌های زیادی دارد. برای دامن‌های کلوش بزرگ، راحت‌تر است دایره را با نخ و گچ مستقیم روی پارچه بکشید (شعاع‌ها در جدول زیر آمده‌اند).</p>';
+  (r.warns || []).forEach(w => { h += '<p class="warn">' + esc(w) + '</p>'; });
+  if (st.photo) h += '<div class="photo small"><img src="' + st.photo + '" alt="عکس مرجع"><span>عکس مرجع مشتری</span></div>';
+  h += '<button class="ghost smallbtn" data-act="zoom">بزرگ‌نمایی / کوچک‌نمایی نقشه</button><div class="sheetwrap' + (st.zoom ? ' zoom' : '') + '">' + sheetSVG(lay).replace(/ width="[^"]*mm" height="[^"]*mm"/, '') + '</div>';
+  h += '<div class="legend"><span><i class="l cut"></i>خط برش</span><span><i class="l stitch"></i>خط دوخت</span><span><i class="l fold"></i>خط تا</span><span><i class="l grain"></i>راستای تار پارچه</span></div>';
+  h += '<h3>ابعاد قطعات</h3><div class="tbl"><table><thead><tr><th>قطعه</th><th>تعداد</th><th>عرض × ارتفاع (با ضریب دوخت)</th><th>توضیح</th></tr></thead><tbody>';
+  r.pieces.forEach(p => { const b = bbs[p.id]; h += '<tr><td data-l="قطعه"><b>' + esc(p.name) + '</b></td><td data-l="تعداد">' + esc(p.count) + '</td><td data-l="ابعاد">' + num(b.w) + ' × ' + num(b.h) + ' سانتی‌متر</td><td data-l="توضیح">' + esc(p.note || '—') + '</td></tr>'; });
+  h += '</tbody></table></div>';
+  if (r.notes.length) h += '<h3>نکته‌های دوخت</h3><ul class="notes">' + r.notes.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>';
+  return h;
+}
+function render() {
+  const s = steps(), i = s.indexOf(st.step);
+  $('.tape-done').style.width = (i / (s.length - 1) * 100) + '%';
+  $('#stepname').textContent = st.step === 'result' ? 'الگو آماده است' : 'مرحلهٔ ' + fa(i + 1) + ' از ' + fa(s.length - 1) + ' — ' + (st.step === 'type' ? typeTitle() : SHORT[st.step]);
+  app.innerHTML = st.step === 'measures' ? measureStep() : st.step === 'result' ? resultStep() : optionStep(st.step);
+}
+
+/* ----- رویدادها ----- */
+app.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const a = b.dataset.act;
+  if (a === 'choose') choose(b.dataset.step, b.dataset.v);
+  else if (a === 'goto') go(b.dataset.v);
+  else if (a === 'back') { const s = steps(); go(s[Math.max(0, s.indexOf(st.step) - 1)]); }
+  else if (a === 'sample') {
+    const smp = { W: 74, H: 100, B: 92, N: 37, SW: 39, BL: 40, UA: 29, WR: 16, SKL: 60, PL: 102, CD: 27, HD: 20,
+      SL: st.sleeve && st.sleeve.indexOf('long') === 0 ? 58 : 22, TL: st.garment === 'bride' ? 150 : dress() ? 120 : 65 };
+    neededFields(st).forEach(k => { if (k !== 'HEM' && k !== 'HD' || st.garment === 'skirt') st.vals[k] = smp[k]; });
+    st.errs = {}; render();
+  }
+  else if (a === 'saveCust') {
+    const name = ($('#custName').value || '').trim();
+    if (!name) { toast('نام مشتری را بنویسید'); return; }
+    if (!Object.keys(st.vals).length) { toast('ابتدا اندازه‌ها را وارد کنید'); return; }
+    const all = custAll(); all[name] = { vals: Object.assign({}, st.vals), at: Date.now() };
+    try { localStorage.setItem('kyar_customers', JSON.stringify(all)); st.customer = name; toast('اندازه‌های ' + name + ' ذخیره شد'); render(); } catch (err) { toast('ذخیره ممکن نشد'); }
+  }
+  else if (a === 'make') {
+    st.formErr = '';
+    const sa = parseFloat(String(st.sa).replace(/[٫,]/g, '.')), hem = parseFloat(String(st.hem).replace(/[٫,]/g, '.'));
+    if (isNaN(sa) || sa < 0.5 || sa > 3) { st.formErr = 'ضریب دوخت باید بین ۰٫۵ و ۳ سانتی‌متر باشد.'; st.errs = {}; render(); return; }
+    if (isNaN(hem) || hem < 0 || hem > 10) { st.formErr = 'لبهٔ تا باید بین ۰ و ۱۰ سانتی‌متر باشد.'; st.errs = {}; render(); return; }
+    st.sa = sa; st.hem = hem;
+    const stt = Object.assign({}, st, { sleeve: st.type === 'strapless' ? 'none' : st.sleeve });
+    const r = build(stt);
+    if (r.errs) { st.errs = r.errs; st.formErr = 'چند اندازه نیاز به اصلاح دارد.'; render(); const bad = document.querySelector('.fld.bad input'); if (bad) bad.focus(); return; }
+    st.errs = {}; st.res = r; st.lay = layout(r.pieces); go('result');
+  }
+  else if (a === 'edit') go('measures');
+  else if (a === 'reset') { Object.assign(st, { garment: null, type: null, sleeve: null, skirtType: null, fit: null, vals: {}, sa: 1, hem: 3, customer: '', photo: null, errs: {}, lay: null, res: null }); go('garment'); }
+  else if (a === 'zoom') { st.zoom = !st.zoom; const w = document.querySelector('.sheetwrap'); if (w) w.classList.toggle('zoom', st.zoom); }
+  else if (a === 'print') doPrint();
+  else if (a === 'svg') {
+    const blob = new Blob([sheetSVG(st.lay)], { type: 'image/svg+xml' }), u = URL.createObjectURL(blob), l = document.createElement('a');
+    l.href = u; l.download = 'khayat-yar-pattern.svg'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 3000);
+  }
+});
+app.addEventListener('input', e => {
+  const t = e.target;
+  if (t.dataset.k) { st.vals[t.dataset.k] = t.value; delete st.errs[t.dataset.k]; t.closest('.fld').classList.remove('bad'); }
+  else if (t.dataset.g) st[t.dataset.g] = t.value;
+  else if (t.id === 'custName') st.customer = t.value;
+});
+app.addEventListener('change', e => {
+  const t = e.target;
+  if (t.id === 'custSel' && t.value) { const c = custAll()[t.value]; if (c) { st.vals = Object.assign({}, c.vals); st.customer = t.value; st.errs = {}; render(); toast('اندازه‌های ' + t.value + ' بارگذاری شد'); } }
+  else if (t.id === 'photoIn' && t.files && t.files[0]) { if (st.photo) URL.revokeObjectURL(st.photo); st.photo = URL.createObjectURL(t.files[0]); render(); }
+});
+
+/* ----- چاپ ۱:۱ ----- */
+function doPrint() {
+  const lay = st.lay, t = lay.t, total = t.used.length;
+  $('#printRoot').innerHTML = t.used.map((u, i) => '<section class="ppage">' + tileSVG(lay, u.c, u.r, total, i + 1) + '</section>').join('');
+  setTimeout(() => window.print(), 60);
+}
+window.addEventListener('afterprint', () => { $('#printRoot').innerHTML = ''; });
+
+/* ----- راهنما ----- */
+$('#helpBtn').addEventListener('click', () => { const d = $('#help'); if (d.showModal) d.showModal(); else d.setAttribute('open', ''); });
+$('#helpClose').addEventListener('click', () => { const d = $('#help'); if (d.close) d.close(); else d.removeAttribute('open'); });
+if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => {});
+render();
+
+</script>
+</body>
+</html>
