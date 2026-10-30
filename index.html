@@ -73,7 +73,7 @@ h3{font-size:18px;margin:26px 0 10px}
 .sheetwrap{background:#fff;border:1.5px solid var(--line);border-radius:10px;overflow:auto;padding:8px;margin-top:8px}
 .sheetwrap svg{display:block;width:100%;height:auto}
 .sheetwrap.zoom{max-height:75vh}
-.sheetwrap.zoom svg{width:1100px;max-width:none}
+.sheetwrap.zoom svg{width:1500px;max-width:none}
 .smallbtn{padding:5px 12px;font-size:14px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .filebtn{display:inline-block;margin-top:8px;padding:7px 16px}
@@ -84,6 +84,7 @@ h3{font-size:18px;margin:26px 0 10px}
 .legend i.stitch{border-top:2px dashed var(--coral)}
 .legend i.fold{border-top:2px dashed var(--ink)}
 .legend i.grain{border-top:1px solid var(--ink)}
+.legend i.edge{border-top:2px solid var(--ok)}
 .tbl{overflow:auto;background:#fff;border:1.5px solid var(--line);border-radius:10px}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line);vertical-align:top}
@@ -129,6 +130,9 @@ svg .pg{font:4px Tahoma,sans-serif;fill:#555;direction:rtl}
  body>*:not(#printRoot){display:none!important}
  #printRoot{display:block}
  .ppage{width:210mm;height:297mm;padding:10mm;break-after:page;page-break-after:always;overflow:hidden}
+ .ppage:last-child{break-after:auto;page-break-after:auto}
+ .ppage.a3{width:297mm;height:419mm;padding:0}
+ .ppage.a3.l{width:420mm;height:296mm}
  .ppage svg{display:block}
 }
 </style>
@@ -137,7 +141,7 @@ svg .pg{font:4px Tahoma,sans-serif;fill:#555;direction:rtl}
 <header class="top">
  <div class="brand">
   <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="30" cy="32" r="22" fill="#F4C430"/><circle cx="30" cy="32" r="9" fill="#1B2A41"/><circle cx="30" cy="32" r="3.5" fill="#F4C430"/><path d="M44 50 L61 56 L61 48 L50 44Z" fill="#F4C430"/><path d="M52 47v4M56 49v3M48 46v3" stroke="#1B2A41" stroke-width="1.2"/></svg>
-  <div><h1>خیاط یار</h1><p>الگوی خیاطی از روی اندازه، با مقیاس واقعی</p></div>
+  <div><h1>خیاط یار</h1><p>الگوی خیاطی از روی اندازه، روی یک برگ A3</p></div>
  </div>
  <button id="helpBtn" type="button">راهنمای استفاده</button>
 </header>
@@ -153,8 +157,8 @@ svg .pg{font:4px Tahoma,sans-serif;fill:#555;direction:rtl}
    <li>مدل لباس، یقه، آستین و گشادی را انتخاب کنید.</li>
    <li>اندازه‌های مشتری را بر حسب سانتی‌متر وارد کنید؛ زیر هر خانه روش اندازه‌گیری نوشته شده است.</li>
    <li>«ساخت الگو» را بزنید و نقشه و جدول ابعاد قطعات را ببینید.</li>
-   <li>با «چاپ / ذخیرهٔ PDF» فایل ۱:۱ بگیرید: مقیاس ۱۰۰٪ و «Fit to page» خاموش. مربع ۱۰×۱۰ را با خط‌کش بسنجید.</li>
-   <li>برگ‌ها را به ترتیب ردیف و ستون بچسبانید، الگو را ببرید و پیش از برش پارچهٔ اصلی، نمونهٔ آزمایشی بدوزید.</li>
+   <li>با «چاپ / ذخیرهٔ PDF (یک برگ A3)» همهٔ قطعه‌ها را روی یک برگ بگیرید: کاغذ A3، مقیاس ۱۰۰٪ و «Fit to page» خاموش. نقشه کوچک‌شده است و اندازهٔ واقعی هر قطعه روی آن نوشته شده. اگر الگوی ۱:۱ می‌خواهید، گزینهٔ A4 چندبرگی را بزنید.</li>
+   <li>طبق اندازه‌های نوشته‌شده روی نقشه، الگو را روی کاغذ یا پارچه بکشید و ببرید؛ پیش از برش پارچهٔ اصلی، نمونهٔ آزمایشی بدوزید.</li>
   </ol>
   <p>الگوها پایه و استاندارد هستند؛ دقت نهایی با تجربهٔ خیاط است.</p>
   <p class="by">طراحی و توسعه: گروه فریلنسری <b>INFC.1405</b></p>
@@ -609,6 +613,35 @@ function layout(pieces) {
   return best;
 }
 
+/* ---------- چیدمان یک‌برگی A3 (کوچک‌شده، با اندازهٔ واقعی روی هر قطعه) ---------- */
+const A3_SCALES = [1, 1/1.25, 1/1.5, 1/1.75, 1/2, 1/2.5, 1/3, 1/3.5, 1/4, 1/4.5, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10, 1/12, 1/15, 1/20];
+const A3_M = 10, A3_HD = 24, A3_FT = 11;   // حاشیه، سربرگ، پاورقی (میلی‌متر)
+function layoutA3(pieces) {
+  const items = prepare(pieces);
+  const areas = [['p', 297, 420], ['l', 420, 297]];
+  const tryScale = (s, force) => {
+    const u = 1 / s, pad = 1.1 * u;                       // فاصلهٔ بین قطعه‌ها = ۱۱ میلی‌متر روی کاغذ
+    const minW = Math.max.apply(null, items.map(i => i.bb.w)) + 2 * pad;
+    const totW = items.reduce((a, i) => a + i.bb.w + pad, pad);
+    let best = null;
+    for (let k = 0; k <= 24; k++) {
+      const mw = minW + Math.max(0, totW - minW) * k / 24;
+      const pk = pack(items, mw, pad);
+      areas.forEach(([o, pw, ph]) => {
+        const aw = pw - 2 * A3_M, ah = ph - 2 * A3_M - A3_HD - A3_FT;
+        const r = Math.max(pk.W * 10 * s / aw, pk.H * 10 * s / ah);
+        if ((r <= 1 || force) && (!best || r < best.r)) best = { r, pk, o, pw, ph, aw, ah, s };
+      });
+    }
+    return best;
+  };
+  let b = null;
+  for (let i = 0; i < A3_SCALES.length && !b; i++) b = tryScale(A3_SCALES[i], false);
+  if (!b) { b = tryScale(A3_SCALES[A3_SCALES.length - 1], true); b.s = b.s / b.r * 0.97; }
+  const placed = b.pk.placed.map(q => ({ it: q.it, dx: q.ox - q.it.bb.x0, dy: q.oy - q.it.bb.y0 }));
+  return { placed, W: b.pk.W, H: b.pk.H, s: b.s, u: 1 / b.s, orient: b.o, pw: b.pw, ph: b.ph, aw: b.aw, ah: b.ah };
+}
+
 /* ---------- ترسیم SVG (واحد: میلی‌متر) ---------- */
 const f1 = x => (Math.round(x * 100) / 100);
 function pathD(P, dx, dy, close) { return 'M' + P.map(p => f1((p[0] + dx) * 10) + ' ' + f1((p[1] + dy) * 10)).join('L') + (close ? 'Z' : ''); }
@@ -661,7 +694,85 @@ function sheetSVG(lay) {
     '.grain{stroke:#1B2A41;stroke-width:.4}.arrow{fill:#1B2A41}.lbl{font:700 6px Tahoma,sans-serif;fill:#1B2A41;direction:rtl}.sm{font:4.2px Tahoma,sans-serif;fill:#44546a;direction:rtl}</style>' +
     '<rect width="' + f1(W) + '" height="' + f1(H) + '" fill="#fff"/>' + sheetMarkup(lay) + '</svg>';
 }
-if (false) module.exports = { build, validate, neededFields, fieldInfo, layout, sheetSVG, tileSVG, sheetMarkup, eases, FIELDS, outline, offsetPoly, bbox, plen, fa, num, isDress };
+
+/* ---------- ترسیم برگ A3: همهٔ قطعه‌ها با اندازهٔ واقعی نوشته‌شده ---------- */
+/* مختصات داخل نقشه، میلی‌متر واقعی است؛ اندازهٔ خط‌ها و نوشته‌ها به‌صورت «میلی‌متر روی کاغذ» حساب می‌شود (ضرب در u = ۱/مقیاس) */
+function a3Piece(q, s, u) {
+  const it = q.it, p = it.p, dx = q.dx, dy = q.dy, bb = it.bb, sb = bbox(it.stitch);
+  const w = x => f1(x * u);
+  const T = (x, y, txt, size, bold, col, extra) => '<text x="' + f1(x) + '" y="' + f1(y) + '" text-anchor="middle" style="font:' +
+    (bold ? '700 ' : '') + f1(size * u) + 'px Tahoma,sans-serif;fill:' + (col || '#1B2A41') + ';direction:rtl;paint-order:stroke;stroke:#fff;stroke-width:' +
+    w(0.9) + ';stroke-linejoin:round"' + (extra || '') + '>' + esc(txt) + '</text>';
+  const X0 = (bb.x0 + dx) * 10, X1 = (bb.x1 + dx) * 10, Y0 = (bb.y0 + dy) * 10, Y1 = (bb.y1 + dy) * 10;
+  const pw = bb.w * 10 * s, ph = bb.h * 10 * s;               // اندازهٔ قطعه روی کاغذ (میلی‌متر)
+  const f = Math.max(0.6, Math.min(1, Math.min(pw, ph) / 30)); // قطعه‌های کوچک، نوشتهٔ کمی کوچک‌تر
+  const dash = 'fill:none;stroke:#C0392B;stroke-width:' + w(0.28) + ';stroke-dasharray:' + w(2) + ' ' + w(1.4);
+  let h = '<g>';
+  h += '<path d="' + pathD(it.cut, dx, dy, true) + '" style="fill:#fff;stroke:#1B2A41;stroke-width:' + w(0.5) + '"/>';
+  h += '<path d="' + pathD(it.stitch, dx, dy, true) + '" style="' + dash + '"/>';
+  p.darts.forEach(d => { h += '<path d="' + pathD(d, dx, dy, false) + '" style="' + dash + '"/>'; });
+  if (p.fold) h += '<path d="' + pathD(p.fold, dx, dy, false) + '" style="fill:none;stroke:#1B2A41;stroke-width:' + w(0.4) + ';stroke-dasharray:' + w(4) + ' ' + w(1) + ' ' + w(0.8) + ' ' + w(1) + '"/>';
+  if (p.grain) {
+    const a = p.grain[0], b = p.grain[1];
+    const ax = (a[0] + dx) * 10, ay = (a[1] + dy) * 10, bx = (b[0] + dx) * 10, by = (b[1] + dy) * 10;
+    const gl = Math.hypot(bx - ax, by - ay) || 1, ux = (bx - ax) / gl, uy = (by - ay) / gl, px = -uy, py = ux, hl = w(3), hw = w(1.1);
+    const head = (X, Y, sg) => 'M' + f1(X) + ' ' + f1(Y) + 'L' + f1(X + sg * hl * ux + hw * px) + ' ' + f1(Y + sg * hl * uy + hw * py) +
+      'L' + f1(X + sg * hl * ux - hw * px) + ' ' + f1(Y + sg * hl * uy - hw * py) + 'Z';
+    h += '<path d="M' + f1(ax) + ' ' + f1(ay) + 'L' + f1(bx) + ' ' + f1(by) + '" style="fill:none;stroke:#1B2A41;stroke-width:' + w(0.3) + '"/>' +
+         '<path d="' + head(ax, ay, 1) + head(bx, by, -1) + '" style="fill:#1B2A41"/>';
+  }
+  /* خط‌های اندازه: عرض (بالا) و ارتفاع (کنار) با ضریب دوخت */
+  const dl = 'fill:none;stroke:#1B2A41;stroke-width:' + w(0.2), yL = Y0 - w(3.2), xL = X0 - w(3.2), tk = w(1.4);
+  h += '<path d="M' + f1(X0) + ' ' + f1(yL) + 'H' + f1(X1) + 'M' + f1(X0) + ' ' + f1(yL - tk) + 'V' + f1(yL + tk) + 'M' + f1(X1) + ' ' + f1(yL - tk) + 'V' + f1(yL + tk) + '" style="' + dl + '"/>';
+  h += T((X0 + X1) / 2, yL - w(1.1), num(bb.w), 3.9, true);
+  h += '<path d="M' + f1(xL) + ' ' + f1(Y0) + 'V' + f1(Y1) + 'M' + f1(xL - tk) + ' ' + f1(Y0) + 'H' + f1(xL + tk) + 'M' + f1(xL - tk) + ' ' + f1(Y1) + 'H' + f1(xL + tk) + '" style="' + dl + '"/>';
+  h += T(xL - w(1.1), (Y0 + Y1) / 2, num(bb.h), 3.9, true, null, ' transform="rotate(-90 ' + f1(xL - w(1.1)) + ' ' + f1((Y0 + Y1) / 2) + ')"');
+  /* نام و تعداد قطعه */
+  const horiz = p.grain && Math.abs(p.grain[0][1] - p.grain[1][1]) < 1e-6;
+  const cx = (bb.x0 + bb.w / 2 + dx) * 10, cy = (bb.y0 + bb.h * (horiz ? 0.38 : 0.5) + dy) * 10;
+  h += T(cx, cy, p.name, 4.8 * f, true) + T(cx, cy + w(5.2 * f), p.count, 3.7 * f, false, '#44546A');
+  /* طول هر لبه روی خط دوخت (برای قطعه‌های غیرمستطیل و به‌اندازهٔ کافی بزرگ) */
+  const rect = p.segs.length === 4 && p.segs.every(sg => sg.pts.length === 2);
+  if (!rect && Math.min(pw, ph) >= 22) {
+    const scx = (sb.x0 + sb.x1) / 2, scy = (sb.y0 + sb.y1) / 2;
+    p.segs.forEach(sg => {
+      const L = plen(sg.pts); if (L < 5) return;
+      let acc = 0, mx = sg.pts[0][0], my = sg.pts[0][1];
+      for (let i = 1; i < sg.pts.length; i++) {
+        const a = sg.pts[i - 1], b = sg.pts[i], d = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        if (acc + d >= L / 2) { const t = (L / 2 - acc) / (d || 1); mx = a[0] + (b[0] - a[0]) * t; my = a[1] + (b[1] - a[1]) * t; break; }
+        acc += d;
+      }
+      let vx = scx - mx, vy = scy - my; const vl = Math.hypot(vx, vy) || 1; vx /= vl; vy /= vl;
+      const k = w(3.4 * f);
+      h += T((mx + dx) * 10 + vx * k, (my + dy) * 10 + vy * k + w(1.1 * f), num(L), 3.3 * f, false, '#2E7D6B');
+    });
+  }
+  return h + '</g>';
+}
+function a3SVG(a, meta, preview) {
+  const s = a.s, u = a.u, PW = a.pw, PH = a.ph, M = A3_M;
+  const ox = M + (a.aw - a.W * 10 * s) / 2, oy = M + A3_HD + (a.ah - a.H * 10 * s) / 2;
+  const tx = (x, y, txt, size, bold, col) => '<text x="' + f1(x) + '" y="' + f1(y) + '" text-anchor="middle" style="font:' + (bold ? '700 ' : '') + size +
+    'px Tahoma,sans-serif;fill:' + (col || '#1B2A41') + ';direction:rtl">' + esc(txt) + '</text>';
+  let h = '<svg xmlns="http://www.w3.org/2000/svg" width="' + PW + 'mm" height="' + PH + 'mm" viewBox="0 0 ' + PW + ' ' + PH + '">';
+  h += '<rect width="' + PW + '" height="' + PH + '" fill="#fff"/>';
+  if (preview) h += '<rect x=".4" y=".4" width="' + (PW - 0.8) + '" height="' + (PH - 0.8) + '" fill="none" stroke="#C5CCD6" stroke-width=".8"/>';
+  h += tx(PW / 2, M + 7, meta.title, 6.5, true);
+  h += tx(PW / 2, M + 13.5, meta.info, 4.2, false, '#44546A');
+  h += tx(PW / 2, M + 19.5, s >= 0.999 ? 'مقیاس ۱ به ۱ (اندازهٔ واقعی)' : 'مقیاس ۱ به ' + num(u, 2) + ' — هر ۱ سانتی‌متر روی کاغذ برابر ' + num(u, 2) + ' سانتی‌متر واقعی است', 4.4, true);
+  let L = 5; [5, 10, 20, 50, 100].forEach(c => { if (c * 10 * s <= 70) L = c; });
+  const len = L * 10 * s, by = M + 11;
+  h += '<path d="M' + M + ' ' + by + 'h' + f1(len) + 'M' + M + ' ' + (by - 1.6) + 'v3.2M' + f1(M + len) + ' ' + (by - 1.6) + 'v3.2" style="fill:none;stroke:#1B2A41;stroke-width:.5"/>';
+  h += tx(M + Math.max(len / 2, 17), by - 3, fa(L) + ' سانتی‌متر واقعی', 3.4, false);
+  h += '<g transform="translate(' + f1(ox) + ' ' + f1(oy) + ') scale(' + s + ')">';
+  a.placed.forEach(q => { h += a3Piece(q, s, u); });
+  h += '</g>';
+  h += tx(PW / 2, PH - M - 5.5, 'همهٔ اندازه‌ها به سانتی‌متر است. عدد پررنگ کنار هر قطعه، اندازهٔ کل با ضریب دوخت؛ عدد سبز، طول لبه روی خط دوخت.', 3.3, false, '#44546A');
+  h += tx(PW / 2, PH - M - 0.8, 'طراحی و توسعه: گروه فریلنسری INFC.1405', 3.4, true);
+  return h + '</svg>';
+}
+if (false) module.exports = { build, validate, neededFields, fieldInfo, layout, layoutA3, a3SVG, sheetSVG, tileSVG, sheetMarkup, eases, FIELDS, outline, offsetPoly, bbox, plen, fa, num, isDress };
 
 /* ===== خیاط یار — رابط کاربری ===== */
 const $ = s => document.querySelector(s);
@@ -682,7 +793,7 @@ const OPTS = {
 const TITLES = { garment: 'چه لباسی می‌دوزید؟', type: '', sleeve: 'آستین را انتخاب کنید', skirtType: 'مدل دامن لباس', fit: 'گشادی لباس', measures: 'اندازه‌ها را وارد کنید', result: 'الگوی شما آماده است' };
 const SHORT = { garment: 'مدل لباس', type: 'نوع', sleeve: 'آستین', skirtType: 'دامن', fit: 'گشادی', measures: 'اندازه‌ها', result: 'الگو' };
 
-const st = { zoom: false, step: 'garment', garment: null, type: null, sleeve: null, skirtType: null, fit: null, vals: {}, sa: 1, hem: 3, customer: '', photo: null, errs: {}, lay: null, res: null };
+const st = { zoom: false, step: 'garment', garment: null, type: null, sleeve: null, skirtType: null, fit: null, vals: {}, sa: 1, hem: 3, customer: '', photo: null, errs: {}, lay: null, a3: null, res: null };
 const app = $('#app');
 
 function dress() { return isDress(st.garment); }
@@ -717,6 +828,16 @@ function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').
 /* ----- بایگانی مشتری ----- */
 function custAll() { try { return JSON.parse(localStorage.getItem('kyar_customers') || '{}'); } catch (e) { return {}; } }
 function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('on'); setTimeout(() => el.classList.remove('on'), 2200); }
+
+/* ----- سربرگ برگ A3 ----- */
+function a3meta() {
+  const parts = [labelOf('type')];
+  if (isTop() && st.type !== 'strapless') parts.push(st.sleeve === 'none' ? 'بدون آستین' : 'آستین ' + labelOf('sleeve'));
+  if (st.skirtType) parts.push('دامن ' + labelOf('skirtType'));
+  parts.push('گشادی ' + labelOf('fit'));
+  if (st.customer) parts.push('مشتری: ' + st.customer);
+  return { title: 'خیاط یار — الگوی ' + labelOf('garment'), info: parts.filter(Boolean).join(' | ') };
+}
 
 /* ----- رندر ----- */
 function chips() {
@@ -757,19 +878,19 @@ function measureStep() {
   return h;
 }
 function resultStep() {
-  const r = st.res, lay = st.lay, bbs = {};
+  const r = st.res, lay = st.lay, a = st.a3, bbs = {};
   lay.placed.forEach(q => { if (q.it.p) bbs[q.it.p.id] = q.it.bb; });
   const n = lay.t.used.length;
   let h = chips() + '<h2>' + TITLES.result + '</h2>';
   h += '<div class="chips fixed"><span class="chip"><small>گشادی</small> ' + labelOf('fit') + '</span>' + (st.customer ? '<span class="chip"><small>مشتری</small> ' + esc(st.customer) + '</span>' : '') +
     '<span class="chip"><small>ضریب دوخت</small> ' + num(st.sa) + ' سانتی‌متر</span></div>';
-  h += '<div class="acts"><button class="primary" data-act="print">چاپ / ذخیرهٔ PDF (۱:۱)</button><button class="ghost" data-act="svg">دانلود SVG</button><button class="ghost" data-act="edit">ویرایش اندازه‌ها</button><button class="ghost" data-act="reset">طرح جدید</button></div>';
-  h += '<p class="pages">این الگو روی <b>' + fa(n) + ' برگ A4</b> چاپ می‌شود. در پنجرهٔ چاپ، مقیاس را <b>۱۰۰٪ (Actual size)</b> بگذارید و «Fit to page» را خاموش کنید؛ سپس مربع ۱۰×۱۰ را با خط‌کش بسنجید.</p>';
-  if (n > 30) h += '<p class="warn">این الگو برگ‌های زیادی دارد. برای دامن‌های کلوش بزرگ، راحت‌تر است دایره را با نخ و گچ مستقیم روی پارچه بکشید (شعاع‌ها در جدول زیر آمده‌اند).</p>';
+  h += '<div class="acts"><button class="primary" data-act="print">چاپ / ذخیرهٔ PDF (یک برگ A3)</button><button class="ghost" data-act="printTiles">چاپ ۱:۱ روی A4 (' + fa(n) + ' برگ)</button><button class="ghost" data-act="svg">دانلود SVG (۱:۱)</button><button class="ghost" data-act="edit">ویرایش اندازه‌ها</button><button class="ghost" data-act="reset">طرح جدید</button></div>';
+  h += '<p class="pages">همهٔ قطعه‌ها روی <b>یک برگ A3</b> (' + (a.orient === 'l' ? 'افقی' : 'عمودی') + ') با مقیاس <b>' + (a.s >= 0.999 ? '۱ به ۱ (اندازهٔ واقعی)' : '۱ به ' + num(a.u, 2)) + '</b> چیده شده‌اند. اندازهٔ واقعی هر قطعه روی نقشه نوشته شده؛ طبق همین اعداد روی کاغذ یا پارچه بکشید. در پنجرهٔ چاپ، کاغذ <b>A3</b> و مقیاس <b>۱۰۰٪ (Actual size)</b> را انتخاب کنید و «Fit to page» را خاموش بگذارید.</p>';
+  if (n > 30) h += '<p class="warn">نسخهٔ ۱:۱ روی A4 برگ‌های زیادی دارد. برای دامن‌های کلوش بزرگ، راحت‌تر است دایره را با نخ و گچ مستقیم روی پارچه بکشید (شعاع‌ها در جدول زیر آمده‌اند).</p>';
   (r.warns || []).forEach(w => { h += '<p class="warn">' + esc(w) + '</p>'; });
   if (st.photo) h += '<div class="photo small"><img src="' + st.photo + '" alt="عکس مرجع"><span>عکس مرجع مشتری</span></div>';
-  h += '<button class="ghost smallbtn" data-act="zoom">بزرگ‌نمایی / کوچک‌نمایی نقشه</button><div class="sheetwrap' + (st.zoom ? ' zoom' : '') + '">' + sheetSVG(lay).replace(/ width="[^"]*mm" height="[^"]*mm"/, '') + '</div>';
-  h += '<div class="legend"><span><i class="l cut"></i>خط برش</span><span><i class="l stitch"></i>خط دوخت</span><span><i class="l fold"></i>خط تا</span><span><i class="l grain"></i>راستای تار پارچه</span></div>';
+  h += '<button class="ghost smallbtn" data-act="zoom">بزرگ‌نمایی / کوچک‌نمایی نقشه (برای خواندن اندازه‌ها)</button><div class="sheetwrap' + (st.zoom ? ' zoom' : '') + '">' + a3SVG(a, a3meta(), true).replace(/ width="[^"]*mm" height="[^"]*mm"/, '') + '</div>';
+  h += '<div class="legend"><span><i class="l cut"></i>خط برش</span><span><i class="l stitch"></i>خط دوخت</span><span><i class="l fold"></i>خط تا</span><span><i class="l grain"></i>راستای تار پارچه</span><span><i class="l edge"></i>طول لبه روی خط دوخت (سانتی‌متر)</span></div>';
   h += '<h3>ابعاد قطعات</h3><div class="tbl"><table><thead><tr><th>قطعه</th><th>تعداد</th><th>عرض × ارتفاع (با ضریب دوخت)</th><th>توضیح</th></tr></thead><tbody>';
   r.pieces.forEach(p => { const b = bbs[p.id]; h += '<tr><td data-l="قطعه"><b>' + esc(p.name) + '</b></td><td data-l="تعداد">' + esc(p.count) + '</td><td data-l="ابعاد">' + num(b.w) + ' × ' + num(b.h) + ' سانتی‌متر</td><td data-l="توضیح">' + esc(p.note || '—') + '</td></tr>'; });
   h += '</tbody></table></div>';
@@ -812,12 +933,13 @@ app.addEventListener('click', e => {
     const stt = Object.assign({}, st, { sleeve: st.type === 'strapless' ? 'none' : st.sleeve });
     const r = build(stt);
     if (r.errs) { st.errs = r.errs; st.formErr = 'چند اندازه نیاز به اصلاح دارد.'; render(); const bad = document.querySelector('.fld.bad input'); if (bad) bad.focus(); return; }
-    st.errs = {}; st.res = r; st.lay = layout(r.pieces); go('result');
+    st.errs = {}; st.res = r; st.lay = layout(r.pieces); st.a3 = layoutA3(r.pieces); go('result');
   }
   else if (a === 'edit') go('measures');
-  else if (a === 'reset') { Object.assign(st, { garment: null, type: null, sleeve: null, skirtType: null, fit: null, vals: {}, sa: 1, hem: 3, customer: '', photo: null, errs: {}, lay: null, res: null }); go('garment'); }
+  else if (a === 'reset') { Object.assign(st, { garment: null, type: null, sleeve: null, skirtType: null, fit: null, vals: {}, sa: 1, hem: 3, customer: '', photo: null, errs: {}, lay: null, a3: null, res: null }); go('garment'); }
   else if (a === 'zoom') { st.zoom = !st.zoom; const w = document.querySelector('.sheetwrap'); if (w) w.classList.toggle('zoom', st.zoom); }
-  else if (a === 'print') doPrint();
+  else if (a === 'print') doPrint('a3');
+  else if (a === 'printTiles') doPrint('tiles');
   else if (a === 'svg') {
     const blob = new Blob([sheetSVG(st.lay)], { type: 'image/svg+xml' }), u = URL.createObjectURL(blob), l = document.createElement('a');
     l.href = u; l.download = 'khayat-yar-pattern.svg'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 3000);
@@ -835,10 +957,22 @@ app.addEventListener('change', e => {
   else if (t.id === 'photoIn' && t.files && t.files[0]) { if (st.photo) URL.revokeObjectURL(st.photo); st.photo = URL.createObjectURL(t.files[0]); render(); }
 });
 
-/* ----- چاپ ۱:۱ ----- */
-function doPrint() {
-  const lay = st.lay, t = lay.t, total = t.used.length;
-  $('#printRoot').innerHTML = t.used.map((u, i) => '<section class="ppage">' + tileSVG(lay, u.c, u.r, total, i + 1) + '</section>').join('');
+/* ----- چاپ: یک برگ A3 یا ۱:۱ روی چند برگ A4 ----- */
+function setPage(css) {
+  let el = document.getElementById('pgstyle');
+  if (!el) { el = document.createElement('style'); el.id = 'pgstyle'; document.head.appendChild(el); }
+  el.textContent = css;
+}
+function doPrint(mode) {
+  if (mode === 'tiles') {
+    const lay = st.lay, t = lay.t, total = t.used.length;
+    setPage('@page{size:A4;margin:0}');
+    $('#printRoot').innerHTML = t.used.map((u, i) => '<section class="ppage">' + tileSVG(lay, u.c, u.r, total, i + 1) + '</section>').join('');
+  } else {
+    const a = st.a3;
+    setPage('@page{size:A3 ' + (a.orient === 'l' ? 'landscape' : 'portrait') + ';margin:0}');
+    $('#printRoot').innerHTML = '<section class="ppage a3 ' + a.orient + '">' + a3SVG(a, a3meta(), false) + '</section>';
+  }
   setTimeout(() => window.print(), 60);
 }
 window.addEventListener('afterprint', () => { $('#printRoot').innerHTML = ''; });
